@@ -21,6 +21,10 @@ jobs:
           echo "EXPLORER=$(git ls-remote -h https://github.com/ping-pub/explorer.git master | cut -f1)" >> $GITHUB_OUTPUT
           grep '^${EXPLORER}$' pingpub.commit && echo "UPDATE=true" >> $GITHUB_OUTPUT || export echo "UPDATE=false" >> $GITHUB_OUTPUT
 
+      - name: Debug
+        run:
+          env
+
   repo_sync:
     needs: [get_state]
     runs-on: ubuntu-latest
