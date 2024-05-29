@@ -1,0 +1,93 @@
+
+name: Build Artifacts
+
+on:
+  push:
+    branches: [ sge ]
+  # pull_request:
+  #   branches: [ master ]
+  workflow_dispatch:
+  
+jobs:
+  build_mainnet:
+    name: Ping deploy
+    runs-on: ubuntu-latest 
+    steps:
+    - name: Environment
+      run:  export NODE_OPTIONS="--max_old_space_size=4096"
+      
+    - name: Git Checkout Latest
+      uses: actions/checkout@v4
+      
+    - name: Install
+      run: yarn install --ignore-engines
+
+    - name: Build
+      run: yarn build
+
+    - name: Pack 
+      run: | 
+        mv ./dist pingpub
+        tar -czf pingpub_mainnet.tar.gz pingpub
+
+    - uses: actions/download-artifact@v4
+      with:
+        name: pingpub_mainnet.tar.gz
+
+  build_testnet:
+    name: Ping deploy
+    runs-on: ubuntu-latest 
+    steps:
+    - name: Environment
+      run:  export NODE_OPTIONS="--max_old_space_size=4096"
+      
+    - name: Git Checkout Latest
+      uses: actions/checkout@v4
+
+    - name: Update config
+      run: |
+        cp chains/testnet/sge.json chains/mainnet/sge.json
+
+    - name: Install
+      run: yarn install --ignore-engines
+
+    - name: Build
+      run: yarn build
+
+    - name: Pack 
+      run: | 
+        mv ./dist pingpub
+        tar -czf pingpub_testnet.tar.gz pingpub
+
+    - uses: actions/download-artifact@v4
+      with:
+        name: pingpub_testnet.tar.gz
+
+  build_staging:
+    name: Ping deploy
+    runs-on: ubuntu-latest 
+    steps:
+    - name: Environment
+      run:  export NODE_OPTIONS="--max_old_space_size=4096"
+      
+    - name: Git Checkout Latest
+      uses: actions/checkout@v4
+
+    - name: Update config
+      run: |
+        cp chains/testnet/sge_stage.json chains/mainnet/sge.json
+      
+    - name: Install
+      run: yarn install --ignore-engines
+
+    - name: Build
+      run: yarn build
+
+    - name: Pack 
+      run: | 
+        mv ./dist pingpub
+        tar -czf pingpub_staging.tar.gz pingpub
+
+    - uses: actions/download-artifact@v4
+      with:
+        name: pingpub_staging.tar.gz
