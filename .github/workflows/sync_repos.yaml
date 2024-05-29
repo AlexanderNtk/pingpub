@@ -22,8 +22,9 @@ jobs:
           grep '^${EXPLORER}$' pingpub.commit && echo "UPDATE=true" >> $GITHUB_OUTPUT || export echo "UPDATE=false" >> $GITHUB_OUTPUT
 
       - name: Debug
+        if: steps.status.outputs.UPDATE == 'true'
         run:
-          env
+          echo "Should display"
 
   repo_sync:
     needs: [get_state]
@@ -49,4 +50,5 @@ jobs:
           rm original/chains/mainnet/cosmos.json original/chains/mainnet/neutron.json original/chains/mainnet/nolus.json 
           rm original/chains/mainnet/osmosis.json original/chains/testnet/crossfi.json
           mv original/* ./
-
+          ls -ls
+          rm -rf original/
