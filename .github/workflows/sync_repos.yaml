@@ -39,6 +39,11 @@ jobs:
         run: |
           echo ${SHA} ${UPDATE}
 
+      - name: Clone SGE Repo
+        uses: actions/checkout@v4
+        with:
+          ref: 'sge'
+
       - name: Clone Original Repo
         uses: actions/checkout@v4
         with:
@@ -46,14 +51,9 @@ jobs:
           ref: 'master'
           path: 'original'
 
-      - name: Clone SGE Repo
-        uses: actions/checkout@v4
-        with:
-          ref: 'sge'
-
       - name: Update files
         run: |
-          ls; ls  original/
+          ls; ls -la original/
           rm original/chains/mainnet/cosmos.json original/chains/mainnet/neutron.json original/chains/mainnet/nolus.json 
           rm original/chains/mainnet/osmosis.json original/chains/testnet/crossfi.json
           mv original/* ./
