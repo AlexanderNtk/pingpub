@@ -22,11 +22,8 @@ jobs:
         id: status
         run: |
           echo "EXPLORER=$(git ls-remote -h https://github.com/ping-pub/explorer.git master | cut -f1)" >> $GITHUB_OUTPUT
-          grep '^\${EXPLORER}\$' pingpub.commit
-          if [[ "$?" == 0 ]]; then echo "UPDATE=true" >> $GITHUB_OUTPUT; fi
+          grep '^${EXPLORER}$' pingpub.commit && echo "UPDATE=true" >> $GITHUB_OUTPUT || export echo "UPDATE=false" >> $GITHUB_OUTPUT
 
       - name: Test 
         run: |
           env
-
-
