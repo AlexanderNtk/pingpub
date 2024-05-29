@@ -27,10 +27,17 @@ jobs:
           echo "Should display"
 
   repo_sync:
-    needs: [get_state]
+    needs: get_state
     runs-on: ubuntu-latest
-    if: needs.get_state.outputs.UPDATE
+    #if: needs.get_state.outputs.UPDATE
     steps:
+      - name: Debug
+        env:
+          SHA: ${{ needs.get_state.outputs.EXPLORER }}
+          UPDATE: ${{ needs.get_state.outputs.UPDATE }}
+         run: |
+          echo ${SHA} ${UPDATE}
+
       - name: Clone Original Repo
         uses: actions/checkout@v4
         with:
