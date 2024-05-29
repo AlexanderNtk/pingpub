@@ -30,7 +30,7 @@ jobs:
   repo_sync:
     needs: get_state
     runs-on: ubuntu-latest
-    #if: needs.get_state.outputs.UPDATE
+    if: needs.get_state.outputs.UPDATE == 0 #Should be changed later
     steps:
       - name: Debug
         env:
@@ -52,9 +52,8 @@ jobs:
           ref: 'sge'
 
       - name: Update files
-        run:
-          ls -la
-          ls -la original/
+        run: |
+          ls; ls  original/
           rm original/chains/mainnet/cosmos.json original/chains/mainnet/neutron.json original/chains/mainnet/nolus.json 
           rm original/chains/mainnet/osmosis.json original/chains/testnet/crossfi.json
           mv original/* ./
