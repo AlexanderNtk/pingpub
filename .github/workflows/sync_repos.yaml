@@ -25,6 +25,7 @@ jobs:
         if: steps.status.outputs.UPDATE == '0'
         run:
           echo "Should display"
+          echo "Output [${{steps.status.outputs.UPDATE}};${{steps.status.outputs.EXPLORER}} ]"
 
   repo_sync:
     needs: get_state
