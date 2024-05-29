@@ -24,7 +24,7 @@ jobs:
   repo_sync:
     needs: [get_state]
     runs-on: ubuntu-latest
-    if: needs.get_state.outputs.UPDATE == "true"
+    if: needs.get_state.outputs.UPDATE
     steps:
       - name: Clone Original Repo
         uses: actions/checkout@v4
