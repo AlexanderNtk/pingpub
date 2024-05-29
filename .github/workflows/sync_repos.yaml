@@ -35,7 +35,7 @@ jobs:
         env:
           SHA: ${{ needs.get_state.outputs.EXPLORER }}
           UPDATE: ${{ needs.get_state.outputs.UPDATE }}
-         run: |
+        run: |
           echo ${SHA} ${UPDATE}
 
       - name: Clone Original Repo
