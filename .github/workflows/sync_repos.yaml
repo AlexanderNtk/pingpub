@@ -1,0 +1,28 @@
+name: Sync repo
+
+on:
+  schedule:
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+
+jobs:
+  get_state:
+    runs-on: ubuntu-latest
+    outputs:
+      EXPLORER: ${{ steps.status.outputs.EXPLORER }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Get commits 
+        id: status
+        run: |
+          echo "EXPLORER=$(git ls-remote -h https://github.com/ping-pub/explorer.git master | cut -f1)" >> $GITHUB_OUTPUT
+          grep '^\${EXPLORER}\$' pinpub.commit
+          if [[ "$?" == 0 ]]; then echo "UPDATE=true" >> $GITHUB_OUTPUT; fi
+
+      - name: Test 
+        run: |
+          env
+          
+
