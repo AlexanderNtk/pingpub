@@ -9,34 +9,11 @@ on:
   workflow_dispatch:
   
 jobs:
-  build_mainnet:
-    name: Build Mainnet Artifacts
-    runs-on: ubuntu-latest 
-    steps:
-    - name: Environment
-      run:  export NODE_OPTIONS="--max_old_space_size=4096"
-      
-    - name: Git Checkout Latest
-      uses: actions/checkout@v4
-      
-    - name: Install
-      run: yarn install --ignore-engines
-
-    - name: Build
-      run: yarn build
-
-    - name: Pack 
-      run: | 
-        mv dist/ pingpub
-        tar -cf pingpub_mainnet.tar ./pingpub/
-
-    - uses: actions/upload-artifact@v4
-      with:
-        name: pingpub_mainnet.tar
-        path: pingpub_mainnet.tar
-        retention-days: 1
-
-  build_testnet:
+  build:
+    strategy:
+      matrix:
+        env: [ mainnet, testnet, staging ]
+        cfgs: [ "chains/mainnet/sge.json", "chains/testnet/sge.json", "chains/testnet/sge_stage.json"]
     runs-on: ubuntu-latest 
     steps:
     - name: Environment
@@ -47,7 +24,7 @@ jobs:
 
     - name: Update config
       run: |
-        cp chains/testnet/sge.json chains/mainnet/sge.json
+        cp ${{ matrix.cfgs }} chains/mainnet/sge.json
 
     - name: Install
       run: yarn install --ignore-engines
@@ -58,40 +35,10 @@ jobs:
     - name: Pack 
       run: | 
         mv dist/ pingpub
-        tar -cf pingpub_testnet.tar ./pingpub/
-      
-    - uses: actions/upload-artifact@v4
-      with:
-        name: pingpub_testnet.tar
-        path: pingpub_testnet.tar
-        retention-days: 1
-
-  build_staging:
-    runs-on: ubuntu-latest 
-    steps:
-    - name: Environment
-      run:  export NODE_OPTIONS="--max_old_space_size=4096"
-      
-    - name: Git Checkout Latest
-      uses: actions/checkout@v4
-
-    - name: Update config
-      run: |
-        cp chains/testnet/sge_stage.json chains/mainnet/sge.json
-      
-    - name: Install
-      run: yarn install --ignore-engines
-
-    - name: Build
-      run: yarn build
-
-    - name: Pack 
-      run: | 
-        mv dist/ pingpub
-        tar -cf pingpub_staging.tar ./pingpub/
+        tar -cf pingpub_${{ matrix.env }}.tar ./pingpub/ >
 
     - uses: actions/upload-artifact@v4
       with:
-        name: pingpub_staging.tar
-        path: pingpub_staging.tar
+        name: pingpub_${{ matrix.env }}.tar
+        path: pingpub_${{ matrix.env }}.tar
         retention-days: 1
