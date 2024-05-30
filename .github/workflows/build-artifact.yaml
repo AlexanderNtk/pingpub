@@ -12,8 +12,12 @@ jobs:
   build:
     strategy:
       matrix:
-        env: [ mainnet, testnet, staging ]
-        cfgs: [ "chains/mainnet/sge.json", "chains/testnet/sge.json", "chains/testnet/sge_stage.json"]
+        - matrix.env: mainnet
+          matrix.cfg: "chains/mainnet/sge.json"
+        - matrix.env: testnet
+          matrix.cfg: "chains/testnet/sge.json"
+        - matrix.env: staging 
+          matrix.cfg: "chains/testnet/sge_stage.json"
     runs-on: ubuntu-latest 
     steps:
     - name: Environment
