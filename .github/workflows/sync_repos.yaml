@@ -57,7 +57,8 @@ jobs:
           rm original/chains/mainnet/osmosis.json original/chains/testnet/crossfi.json
           cp -r ./original/* ./
           rm -rf original/
-          
+          echo $UPDATE > pingpub.commit
+    
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:

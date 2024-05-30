@@ -10,7 +10,7 @@ on:
   
 jobs:
   build_mainnet:
-    name: Ping deploy
+    name: Build Mainnet Artifacts
     runs-on: ubuntu-latest 
     steps:
     - name: Environment
@@ -35,7 +35,6 @@ jobs:
         name: pingpub_mainnet.tar.gz
 
   build_testnet:
-    name: Ping deploy
     runs-on: ubuntu-latest 
     steps:
     - name: Environment
@@ -64,7 +63,6 @@ jobs:
         name: pingpub_testnet.tar.gz
 
   build_staging:
-    name: Ping deploy
     runs-on: ubuntu-latest 
     steps:
     - name: Environment
