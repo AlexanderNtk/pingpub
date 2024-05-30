@@ -27,8 +27,8 @@ jobs:
 
     - name: Pack 
       run: | 
-        mv ./dist pingpub
-        tar -czf pingpub_mainnet.tar.gz /pingpub
+        mv dist/ pingpub
+        tar -czf pingpub_mainnet.tar.gz ./pingpub/
 
     - uses: actions/download-artifact@v4
       with:
@@ -55,8 +55,8 @@ jobs:
 
     - name: Pack 
       run: | 
-        mv ./dist pingpub
-        tar -czf pingpub_testnet.tar.gz /pingpub
+        mv dist/ pingpub
+        tar -czf pingpub_testnet.tar.gz ./pingpub/
 
     - name: Debug
       run: |
@@ -88,8 +88,8 @@ jobs:
 
     - name: Pack 
       run: | 
-        mv ./dist pingpub
-        tar -czf pingpub_staging.tar.gz /pingpub
+        mv dist/ pingpub
+        tar -czf pingpub_staging.tar.gz ./pingpub/
 
     - name: Debug
       run: |
