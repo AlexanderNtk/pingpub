@@ -30,9 +30,10 @@ jobs:
         mv dist/ pingpub
         tar -czf pingpub_mainnet.tar.gz ./pingpub/
 
-    - uses: actions/download-artifact@v4
+    - uses: actions/upload-artifact@v4
       with:
         name: pingpub_mainnet.tar.gz
+        retention-days: 1
 
   build_testnet:
     runs-on: ubuntu-latest 
@@ -57,15 +58,11 @@ jobs:
       run: | 
         mv dist/ pingpub
         tar -czf pingpub_testnet.tar.gz ./pingpub/
-
-    - name: Debug
-      run: |
-        ls -la 
       
-
-    - uses: actions/download-artifact@v4
+    - uses: actions/upload-artifact@v4
       with:
         name: pingpub_testnet.tar.gz
+        retention-days: 1
 
   build_staging:
     runs-on: ubuntu-latest 
@@ -91,10 +88,7 @@ jobs:
         mv dist/ pingpub
         tar -czf pingpub_staging.tar.gz ./pingpub/
 
-    - name: Debug
-      run: |
-        ls -ls 
-
-    - uses: actions/download-artifact@v4
+    - uses: actions/upload-artifact@v4
       with:
-        name: pingpub_staging.tar.gz
+        name: pingpub_staging.tar.gz 
+        retention-days: 1
