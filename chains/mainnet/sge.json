@@ -10,7 +10,7 @@
     "https://sge-api.sr20de.xyz"
   ],
   "rpc": [
-    "https://rpc.sgenetwork.io/"
+    "https://rpc.sgenetwork.io/",
     "https://rpc.cosmos.directory/sge",
     "https://sge-rpc.lavenderfive.com",
     "https://sge-rpc.polkachu.com",
