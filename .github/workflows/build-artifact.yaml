@@ -9,7 +9,11 @@ on:
   workflow_dispatch:
   
 jobs:
-  build:
+  build_packages:
+    outputs:
+      MAINPKG: ${{ steps.upload.outputs.EXPLORER }}
+      TESTPKG: ${{ steps.upload.outputs.UPDATE }}
+      STGPCKG: ${{ steps.upload.outputs.UPDATE }}
     strategy:
       matrix:
         include:
@@ -40,10 +44,43 @@ jobs:
     - name: Pack 
       run: | 
         mv dist/ pingpub
-        tar -cf pingpub_${{ matrix.env }}.tar ./pingpub/ 
+        tar -czf pingpub_${{ matrix.env }}.tar.gz ./pingpub/ 
 
     - uses: actions/upload-artifact@v4
+      id: upload
       with:
-        name: pingpub_${{ matrix.env }}.tar
-        path: pingpub_${{ matrix.env }}.tar
+        name: pingpub_${{ matrix.env }}.tar.gz
+        path: pingpub_${{ matrix.env }}.tar.gz
         retention-days: 1
+
+  build_image:
+    needs: build_packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout aws-infra
+        uses: actions/checkout@v4
+        with: 
+          repository: 'saage-tech/aws-infra'
+
+      - name: Download 
+        uses: actions/download-artifact@v4
+
+      - name: Debug
+        run: 
+          ls -la
+
+      - name: Build Staing image
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-1
+          
+      - name: Packer Init
+        run: | 
+          cp pingpub_staging.tar.gz packer/blockexplorer/pingpub.tar.gz
+          cd packer/blockexplorer
+          packer init .
+
+      - name: Packer Build 
+        run: packer build --var-file=dev.pkvars.hcl blockexplorer.pkr.hc

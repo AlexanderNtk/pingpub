@@ -32,13 +32,6 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.get_state.outputs.UPDATE == 0 #Should be changed later
     steps:
-      - name: Debug
-        env:
-          SHA: ${{ needs.get_state.outputs.EXPLORER }}
-          UPDATE: ${{ needs.get_state.outputs.UPDATE }}
-        run: |
-          echo ${SHA} ${UPDATE}
-
       - name: Clone SGE Repo
         uses: actions/checkout@v4
         with:
