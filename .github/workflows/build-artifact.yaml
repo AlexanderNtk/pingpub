@@ -33,6 +33,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: pingpub_mainnet.tar
+        path: pingpub_mainnet.tar
         retention-days: 1
 
   build_testnet:
@@ -62,6 +63,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: pingpub_testnet.tar
+        path: pingpub_testnet.tar
         retention-days: 1
 
   build_staging:
@@ -90,5 +92,6 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: pingpub_staging.tar 
+        name: pingpub_staging.tar
+        path: pingpub_staging.tar
         retention-days: 1
