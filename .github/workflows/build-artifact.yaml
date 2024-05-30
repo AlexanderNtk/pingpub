@@ -28,11 +28,11 @@ jobs:
     - name: Pack 
       run: | 
         mv dist/ pingpub
-        tar -czf pingpub_mainnet.tar.gz ./pingpub/
+        tar -cf pingpub_mainnet.tar ./pingpub/
 
     - uses: actions/upload-artifact@v4
       with:
-        name: pingpub_mainnet.tar.gz
+        name: pingpub_mainnet.tar
         retention-days: 1
 
   build_testnet:
@@ -57,11 +57,11 @@ jobs:
     - name: Pack 
       run: | 
         mv dist/ pingpub
-        tar -czf pingpub_testnet.tar.gz ./pingpub/
+        tar -cf pingpub_testnet.tar ./pingpub/
       
     - uses: actions/upload-artifact@v4
       with:
-        name: pingpub_testnet.tar.gz
+        name: pingpub_testnet.tar
         retention-days: 1
 
   build_staging:
@@ -86,9 +86,9 @@ jobs:
     - name: Pack 
       run: | 
         mv dist/ pingpub
-        tar -czf pingpub_staging.tar.gz ./pingpub/
+        tar -cf pingpub_staging.tar ./pingpub/
 
     - uses: actions/upload-artifact@v4
       with:
-        name: pingpub_staging.tar.gz 
+        name: pingpub_staging.tar 
         retention-days: 1
