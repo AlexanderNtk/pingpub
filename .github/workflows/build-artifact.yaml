@@ -29,7 +29,7 @@ jobs:
 
     - name: Update config
       run: |
-        cp ${{ matrix.cfg }} chains/mainnet/sge.json
+        if [ ${{ matrix.env }} != "mainnet" ]; then cp ${{ matrix.cfg }} chains/mainnet/sge.json fi;
 
     - name: Install
       run: yarn install --ignore-engines
