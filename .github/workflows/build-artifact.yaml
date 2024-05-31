@@ -56,6 +56,11 @@ jobs:
   build_image:
     needs: build_packages
     runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write 
+      contents: read  
+
     steps:
       - name: Checkout aws-infra
         uses: actions/checkout@v4
