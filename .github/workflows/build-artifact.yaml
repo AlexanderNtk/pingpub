@@ -90,4 +90,4 @@ jobs:
           packer init .
 
       - name: Packer Build 
-        run: packer build --var-file=dev.pkvars.hcl blockexplorer.pkr.hc
+        run: packer build --var-file=dev.pkvars.hcl blockexplorer.pkr.hcl
