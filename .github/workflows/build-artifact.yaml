@@ -75,6 +75,7 @@ jobs:
         run: |
           ls -la
           ls -la ./packer
+          ls -la pingpub_staging.tar.gz
 
       - name: Build Staing image
         uses: aws-actions/configure-aws-credentials@v4
