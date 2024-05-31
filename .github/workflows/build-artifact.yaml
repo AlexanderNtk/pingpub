@@ -85,7 +85,7 @@ jobs:
           
       - name: Packer Init
         run: | 
-          cp pingpub_staging.tar.gz/pingpub_staging.tar.gz ./packer/blockexplorer/pingpub.tar.gz
+          cp pingpub_staging.tar.gz/pingpub_staging.tar.gz ./packer/blockexplorer/files/pingpub.tar.gz
           cd packer/blockexplorer
           packer init .
 
