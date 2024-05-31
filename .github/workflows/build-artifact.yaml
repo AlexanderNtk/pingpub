@@ -74,6 +74,7 @@ jobs:
       - name: Debug
         run: 
           ls -la
+          ls -la ./packer
 
       - name: Build Staing image
         uses: aws-actions/configure-aws-credentials@v4
@@ -83,7 +84,7 @@ jobs:
           
       - name: Packer Init
         run: | 
-          cp pingpub_staging.tar.gz packer/blockexplorer/pingpub.tar.gz
+          cp pingpub_staging.tar.gz ./packer/blockexplorer/pingpub.tar.gz
           cd packer/blockexplorer
           packer init .
 
