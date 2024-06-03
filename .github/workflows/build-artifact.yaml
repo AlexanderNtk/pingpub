@@ -76,7 +76,7 @@ jobs:
           packer version
           ls -la ./packer/blockexplorer
 
-      - name: Build Staging image
+      - name: Assume role
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
@@ -86,6 +86,7 @@ jobs:
         run: | 
           cp pingpub_staging.tar.gz/pingpub_staging.tar.gz ./packer/blockexplorer/files/pingpub.tar.gz
           cd packer/blockexplorer
+          rm staging.pkr.hcl
           packer init .
 
       - name: Packer Build 
