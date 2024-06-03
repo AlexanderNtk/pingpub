@@ -91,4 +91,4 @@ jobs:
       - name: Packer Build 
         working-directory: packer/blockexplorer
         run: |
-          packer build --var-file=dev.pkvars.hcl blockexplorer.pkr.hcl
+          packer build -var-file=dev.pkvars.hcl blockexplorer.pkr.hcl
