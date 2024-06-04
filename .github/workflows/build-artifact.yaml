@@ -86,7 +86,6 @@ jobs:
         run: | 
           cp pingpub_staging.tar.gz/pingpub_staging.tar.gz ./packer/blockexplorer/files/pingpub.tar.gz
           cd packer/blockexplorer
-          rm staging.pkr.hcl
           packer init .
 
       - name: Packer Build 
