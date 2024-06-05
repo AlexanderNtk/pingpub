@@ -53,7 +53,7 @@ jobs:
     needs: build_packages
     runs-on: ubuntu-latest
     outputs: 
-      PINGPUB_AMI_STAGING: ${{ steps.extract.PINGPUB_AMI }}
+      PINGPUB_AMI_STAGING: ${{ steps.extract.outputs.PINGPUB_AMI }}
     permissions:
       id-token: write 
       contents: read  
@@ -95,7 +95,7 @@ jobs:
     needs: build_packages
     runs-on: ubuntu-latest
     outputs: 
-      PINGPUB_AMI_TESTNET: ${{ steps.extract.PINGPUB_AMI }}
+      PINGPUB_AMI_TESTNET: ${{ steps.extract.outputs.PINGPUB_AMI }}
     permissions:
       id-token: write 
       contents: read  
@@ -117,7 +117,6 @@ jobs:
           
       - name: Packer Init
         run: |
-          ls -la
           cp pingpub_testnet.tar.gz/pingpub_testnet.tar.gz ./packer/blockexplorer/files/pingpub.tar.gz
           cd packer/blockexplorer
           packer init .
@@ -172,6 +171,7 @@ jobs:
       - name: Extract AMI_ID
         id: extract
         run : |
+          ls -la
           AMI_ID=$(jq -r '.builds[-1].artifact_id' packer-manifest.json | cut -d ":" -f2)
           echo "PINGPUB_AMI=$AMI_ID" >> $GITHUB_OUTPUT
           echo $AMI_ID
@@ -185,6 +185,7 @@ jobs:
         with: 
           repository: 'saage-tech/terragrunt-live-sgenetwork'
           token:  ${{ secrets.READ_ST }}
+          path: 'tgcode'
 
       - name: Debug
         env:
@@ -195,16 +196,18 @@ jobs:
           echo $MAINNET_AMI
           echo $TESTNET_AMI
           echo $STAGING_AMI
+          ls -la
+          ls tgcode
 
       - name: Replace AMI ID Staging
         uses: jacobtomlinson/gha-find-replace@v3
         with:
           find: "aws_instance_ami = .*"
           replace: "aws_instance_ami = ${{ needs.build_image_staging.outputs.PINGPUB_AMI_STAGING }}"
-          include: ${GITHUB_WORKSPACE}."/staging/us-east-1/blockchain/pingpub/instance/pingpub-priv/*.hcl"
+          include: ${GITHUB_WORKSPACE}"tgcode/staging/us-east-1/blockchain/pingpub/instance/pingpub-priv/*.hcl"
 
       - name: Debug
-        run: cat ${GITHUB_WORKSPACE}."/staging/us-east-1/blockchain/pingpub/instance/pingpub-priv/terragrunt.hcl"
+        run: cat ${GITHUB_WORKSPACE}"tgcode/staging/us-east-1/blockchain/pingpub/instance/pingpub-priv/terragrunt.hcl"
 
 
 
