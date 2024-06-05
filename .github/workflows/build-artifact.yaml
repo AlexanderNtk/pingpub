@@ -60,13 +60,13 @@ jobs:
       matrix:
         include:
           - env: mainnet
-            role: AWS_ROLE_TO_ASSUME_MAINNET
+            role: secrets.AWS_ROLE_TO_ASSUME_MAINNET
             region:  AWS_REGION_MAINNET
           - env: testnet
-            role: AWS_ROLE_TO_ASSUME_TESTNET
+            role: secrets.AWS_ROLE_TO_ASSUME_TESTNET
             region: AWS_REGION_TESTNET
           - env: staging 
-            role: AWS_ROLE_TO_ASSUME_STAGING
+            role: secrets.AWS_ROLE_TO_ASSUME_STAGING
             region: AWS_REGION_STAGING
     permissions:
       id-token: write 
@@ -83,14 +83,19 @@ jobs:
 
       - name: Debug 
         run: |
-          echo "${{ secrets[matrix.role] }}"
-          echo "secrets[matrix.region]"
+          echo "${{ secrets[matrix.role] }}" > test.txt
+          #echo "secrets[matrix.region] }}"
+
+      - name: Debug 
+        run: |
+          echo "${{ secrets[matrix.role] }}" > test.txt
+
 
       - name: Assume role
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets[matrix.role] }}
-          aws-region: ${{ secrets[matrix.region] }}
+          role-to-assume: ${{ [matrix.role] }}
+          aws-region: ${{ [matrix.region] }}
           
       - name: Packer Init
         run: |
@@ -112,8 +117,134 @@ jobs:
           echo "PINGPUB_AMI_$USED_ENV=$AMI_ID" >> $GITHUB_OUTPUT
           echo $AMI_ID
 
+  build_image_staging:
+    needs: build_packages
+    runs-on: ubuntu-latest
+    outputs: 
+      PINGPUB_AMI_STAGING: ${{ steps.extract.PINGPUB_AMI }}
+    permissions:
+      id-token: write 
+      contents: read  
+    steps:
+      - name: Checkout aws-infra
+        uses: actions/checkout@v4
+        with: 
+          repository: 'saage-tech/aws-infra'
+          token:  ${{ secrets.READ_ST }}
+
+      - name: Download 
+        uses: actions/download-artifact@v4
+
+      - name: Assume role
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_STAGING }}
+          aws-region: ${{ secrets.AWS_REGION_STAGING }}
+          
+      - name: Packer Init
+        run: |
+          cp pingpub_${{ matrix.env }}.tar.gz/pingpub_${{ matrix.env }}.tar.gz ./packer/blockexplorer/files/pingpub.tar.gz
+          cd packer/blockexplorer
+          packer init .
+
+      - name: Packer Build 
+        working-directory: packer/blockexplorer
+        run: |
+          packer build -var-file=${{ matrix.env }}.pkvars.hcl blockexplorer.pkr.hcl
+
+      - name: Extract AMI_ID
+        id: extract
+        run : |
+          AMI_ID=$(jq -r '.builds[-1].artifact_id' packer-manifest.json | cut -d ":" -f2)
+          echo "PINGPUB_AMI=$AMI_ID" >> $GITHUB_OUTPUT
+          echo $AMI_ID
+
+  build_image_testnet:
+    needs: build_packages
+    runs-on: ubuntu-latest
+    outputs: 
+      PINGPUB_AMI_TESTNET: ${{ steps.extract.PINGPUB_AMI }}
+    permissions:
+      id-token: write 
+      contents: read  
+    steps:
+      - name: Checkout aws-infra
+        uses: actions/checkout@v4
+        with: 
+          repository: 'saage-tech/aws-infra'
+          token:  ${{ secrets.READ_ST }}
+
+      - name: Download 
+        uses: actions/download-artifact@v4
+
+      - name: Assume role
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_TESTNET }}
+          aws-region: ${{ secrets.AWS_REGION_TESTNET }}
+          
+      - name: Packer Init
+        run: |
+          cp pingpub_${{ matrix.env }}.tar.gz/pingpub_${{ matrix.env }}.tar.gz ./packer/blockexplorer/files/pingpub.tar.gz
+          cd packer/blockexplorer
+          packer init .
+
+      - name: Packer Build 
+        working-directory: packer/blockexplorer
+        run: |
+          packer build -var-file=${{ matrix.env }}.pkvars.hcl blockexplorer.pkr.hcl
+
+      - name: Extract AMI_ID
+        id: extract
+        run : |
+          AMI_ID=$(jq -r '.builds[-1].artifact_id' packer-manifest.json | cut -d ":" -f2)
+          echo "PINGPUB_AMI=$AMI_ID" >> $GITHUB_OUTPUT
+          echo $AMI_ID
+
+  build_image_mainnet:
+    needs: build_packages
+    runs-on: ubuntu-latest
+    outputs: 
+      PINGPUB_AMI_MAINNET: ${{ steps.extract.PINGPUB_AMI }}
+    permissions:
+      id-token: write 
+      contents: read  
+    steps:
+      - name: Checkout aws-infra
+        uses: actions/checkout@v4
+        with: 
+          repository: 'saage-tech/aws-infra'
+          token:  ${{ secrets.READ_ST }}
+
+      - name: Download 
+        uses: actions/download-artifact@v4
+
+      - name: Assume role
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_TESTNET }}
+          aws-region: ${{ secrets.AWS_REGION_TESTNET }}
+          
+      - name: Packer Init
+        run: |
+          cp pingpub_${{ matrix.env }}.tar.gz/pingpub_${{ matrix.env }}.tar.gz ./packer/blockexplorer/files/pingpub.tar.gz
+          cd packer/blockexplorer
+          packer init .
+
+      - name: Packer Build 
+        working-directory: packer/blockexplorer
+        run: |
+          packer build -var-file=${{ matrix.env }}.pkvars.hcl blockexplorer.pkr.hcl
+
+      - name: Extract AMI_ID
+        id: extract
+        run : |
+          AMI_ID=$(jq -r '.builds[-1].artifact_id' packer-manifest.json | cut -d ":" -f2)
+          echo "PINGPUB_AMI=$AMI_ID" >> $GITHUB_OUTPUT
+          echo $AMI_ID
+
   update_ami:
-    needs: build_image
+    needs: [ build_image_staging, build_image_testnet, build_image_mainnet ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout terragrunt code
@@ -128,6 +259,6 @@ jobs:
 
       - name: Debug
         run:
-          echo ${{ needs.build_mage.PINGPUB_AMI_MAINNET }}
-          echo ${{ needs.build_mage.PINGPUB_AMI_TESTNET }}
-          echo ${{ needs.build_mage.PINGPUB_AMI_STAGING }}
+          echo ${{ needs.build_image_mainnet.PINGPUB_AMI_MAINNET }}
+          echo ${{ needs.build_image_testnet.PINGPUB_AMI_TESTNET }}
+          echo ${{ needs.build_image_staging.PINGPUB_AMI_STAGING }}
