@@ -129,6 +129,7 @@ jobs:
 
       - name: Extract AMI_ID
         id: extract
+        working-directory: packer/blockexplorer
         run : |
           AMI_ID=$(jq -r '.builds[-1].artifact_id' packer-manifest.json | cut -d ":" -f2)
           echo "PINGPUB_AMI=$AMI_ID" >> $GITHUB_OUTPUT
@@ -171,6 +172,7 @@ jobs:
 
       - name: Extract AMI_ID
         id: extract
+        working-directory: packer/blockexplorer
         run : |
           ls -la
           AMI_ID=$(jq -r '.builds[-1].artifact_id' packer-manifest.json | cut -d ":" -f2)
@@ -222,7 +224,7 @@ jobs:
           include: ${GITHUB_WORKSPACE}"tgcode/staging/us-east-1/blockchain/pingpub/instance/pingpub-priv/*.hcl"
 
       - name: Debug
-        run: cat ${GITHUB_WORKSPACE}"/tgcode/testnet/us-east-1/blockchain/pingpub/instance/pingpub-priv/terragrunt.hcl"
+        run: cat ${GITHUB_WORKSPACE}"/tgcode/staging/us-east-1/blockchain/pingpub/instance/pingpub-priv/terragrunt.hcl"
 
       - name: Check terragrunt HCL mainnet
         uses: gruntwork-io/terragrunt-action@v2
