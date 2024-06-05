@@ -155,12 +155,12 @@ jobs:
       - name: Assume role
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_TESTNET }}
-          aws-region: ${{ secrets.AWS_REGION_TESTNET }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_MAINNET }}
+          aws-region: ${{ secrets.AWS_REGION_MAINNET }}
           
       - name: Packer Init
         run: |
-          cp pingpub_mainnet.tar.gz/pingpub_${{ matrix.env }}.tar.gz ./packer/blockexplorer/files/pingpub.tar.gz
+          cp pingpub_mainnet.tar.gz/pingpub_mainnet.tar.gz ./packer/blockexplorer/files/pingpub.tar.gz
           cd packer/blockexplorer
           packer init .
 
