@@ -201,7 +201,7 @@ jobs:
         with:
           find: "aws_instance_ami = .*"
           replace: "aws_instance_ami = ${{ needs.build_image_staging.PINGPUB_AMI_STAGING }}"
-          include: "staging/us-east-1/blockchain/pingpub/instance/pingpub-priv/*.hcl"
+          include: ${GITHUB_WORKSPACE}."/staging/us-east-1/blockchain/pingpub/instance/pingpub-priv/*.hcl"
 
       - name: Check terragrunt HCL mainnet
         uses: gruntwork-io/terragrunt-action@v2
