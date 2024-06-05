@@ -83,8 +83,8 @@ jobs:
 
       - name: Debug 
         run: |
-          echo "${{ secrets[matrix.role] }}""
-          echo "${{ secrets[matrix.region] }}"
+          echo "${{ secrets[matrix.role] }}"
+          echo "secrets[matrix.region]"
 
       - name: Assume role
         uses: aws-actions/configure-aws-credentials@v4
