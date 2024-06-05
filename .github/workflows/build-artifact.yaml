@@ -10,10 +10,6 @@ on:
   
 jobs:
   build_packages:
-    outputs:
-      MAINPKG: ${{ steps.upload.outputs.EXPLORER }}
-      TESTPKG: ${{ steps.upload.outputs.UPDATE }}
-      STGPCKG: ${{ steps.upload.outputs.UPDATE }}
     strategy:
       matrix:
         include:
@@ -56,11 +52,25 @@ jobs:
   build_image:
     needs: build_packages
     runs-on: ubuntu-latest
-
+    outputs: 
+      PINGPUB_AMI_MAINNET: ${{ steps.extract.PINGPUB_AMI_MAINNET }}
+      PINGPUB_AMI_TESTNET: ${{ steps.extract.PINGPUB_AMI_TESTNET }}
+      PINGPUB_AMI_STAGING: ${{ steps.extract.PINGPUB_AMI_STAGING }}
+    strategy:
+      matrix:
+        include:
+          - env: mainnet
+            role: ${{ secrets.AWS_ROLE_TO_ASSUME_MAINNET }}
+            region:  ${{ secrets.AWS_REGION_MAINNET }}
+          - env: testnet
+            role: ${{ secrets.AWS_ROLE_TO_ASSUME_TESTNET }}
+            region: ${{ secrets.AWS_REGION_TESTNET }}
+          - env: staging 
+            role: ${{ secrets.AWS_ROLE_TO_ASSUME_STAGING }}
+            region: ${{ secrets.AWS_REGION_STAGING }}
     permissions:
       id-token: write 
       contents: read  
-
     steps:
       - name: Checkout aws-infra
         uses: actions/checkout@v4
@@ -71,11 +81,6 @@ jobs:
       - name: Download 
         uses: actions/download-artifact@v4
 
-      - name: Debug
-        run: |
-          packer version
-          ls -la ./packer/blockexplorer
-
       - name: Assume role
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -83,12 +88,41 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
           
       - name: Packer Init
-        run: | 
-          cp pingpub_staging.tar.gz/pingpub_staging.tar.gz ./packer/blockexplorer/files/pingpub.tar.gz
+        run: |
+          ls -la 
+          cp pingpub_${{ matrix.env }}.tar.gz/pingpub_${{ matrix.env }}.tar.gz ./packer/blockexplorer/files/pingpub.tar.gz
           cd packer/blockexplorer
           packer init .
 
       - name: Packer Build 
         working-directory: packer/blockexplorer
         run: |
-          packer build -var-file=dev.pkvars.hcl blockexplorer.pkr.hcl
+          packer build -var-file=${{ matrix.env }}.pkvars.hcl blockexplorer.pkr.hcl
+
+      - name: Extract AMI_ID
+        id: extract
+        run : |
+          AMI_ID=$(jq -r '.builds[-1].artifact_id' packer-manifest.json | cut -d ":" -f2)
+          USED_ENV=$(echo ${{ matrix.env }} | awk '{print toupper($0)}')
+          echo "PINGPUB_AMI_$USED_ENV=$AMI_ID" >> $GITHUB_OUTPUT
+          echo $AMI_ID
+
+  update_ami:
+    needs: build_image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout terragrunt code
+        uses: actions/checkout@v4
+        with: 
+          repository: 'saage-tech/terragrunt-live-sgenetwork'
+          token:  ${{ secrets.READ_ST }}
+
+      #- name: Update AMI
+      #  run: |
+      #    sed -i 's/${{ needs.build_mage.PINGPUB_AMI_ID }}/ami-${PING_PUB}/'  pingpub_staging/live-sgenetwork/terragrunt-live.hierarcct/terragrunt-live-sgengen
+
+      - name: Debug
+        run:
+          echo ${{ needs.build_mage.PINGPUB_AMI_MAINNET }}
+          echo ${{ needs.build_mage.PINGPUB_AMI_TESTNET }}
+          echo ${{ needs.build_mage.PINGPUB_AMI_STAGING }}
