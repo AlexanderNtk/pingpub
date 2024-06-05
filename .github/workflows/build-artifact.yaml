@@ -200,7 +200,7 @@ jobs:
         uses: jacobtomlinson/gha-find-replace@v3
         with:
           find: "aws_instance_ami = .*"
-          replace: "aws_instance_ami = ${{ needs.build_image_staging.PINGPUB_AMI_STAGING }}"
+          replace: ${{ format('{0}{1}', "aws_instance_ami = ", needs.build_image_staging.PINGPUB_AMI_STAGING ) }}
           include: ${GITHUB_WORKSPACE}."/staging/us-east-1/blockchain/pingpub/instance/pingpub-priv/*.hcl"
 
       - name: Check terragrunt HCL mainnet
@@ -210,3 +210,8 @@ jobs:
           tg_version: v0.42.3
           tg_dir: staging/us-east-1/blockchain/pingpub/instance/pingpub-priv
           tg_command: 'hclfmt'
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Automated Change - PingPub update
