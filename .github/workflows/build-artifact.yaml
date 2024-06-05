@@ -194,7 +194,7 @@ jobs:
 
       - name: Replace AMI ID
         run: |
-          ls -la ${{ GITHUB_WORKSPACE }}
+          ls -la $GITHUB_WORKSPACE
           pwd
           cd staging/us-east-1/blockchain/pingpub/instance/pingpub-priv
           awk '/aws_instance_ami =/{gsub(".*","aws_instance_ami=MY LINE",$0)}1' terragrunt.hcl
