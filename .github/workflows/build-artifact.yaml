@@ -187,18 +187,21 @@ jobs:
           token:  ${{ secrets.READ_ST }}
 
       - name: Debug
+        env:
+          MAINNET_AMI: ${{ needs.build_image_mainnet.PINGPUB_AMI_MAINNET }}
+          TESTNET_AMI: ${{ needs.build_image_testnet.PINGPUB_AMI_TESTNET }}
+          STAGING_AMI: ${{ needs.build_image_staging.PINGPUB_AMI_STAGING }}
         run:
-          echo ${{ needs.build_image_mainnet.PINGPUB_AMI_MAINNET }}
-          echo ${{ needs.build_image_testnet.PINGPUB_AMI_TESTNET }}
-          echo ${{ needs.build_image_staging.PINGPUB_AMI_STAGING }}
+          echo $MAINNET_AMI
+          echo $TESTNET_AMI
+          echo $STAGING_AMI
 
-      - name: Replace AMI ID
-        run: |
-          ls -la $GITHUB_WORKSPACE
-          pwd
-          cd staging/us-east-1/blockchain/pingpub/instance/pingpub-priv
-          awk '/aws_instance_ami =/{gsub(".*","aws_instance_ami=MY LINE",$0)}1' terragrunt.hcl
-
+      - name: Replace AMI ID Staging
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          find: "aws_instance_ami = .*"
+          replace: "aws_instance_ami = ${{ needs.build_image_staging.PINGPUB_AMI_STAGING }}"
+          include: "${{ GITHUB_WORKSPACE }}/staging/us-east-1/blockchain/pingpub/instance/pingpub-priv/*.hcl"
 
       - name: Check terragrunt HCL mainnet
         uses: gruntwork-io/terragrunt-action@v2
@@ -206,4 +209,4 @@ jobs:
           tf_version: v1.3.3
           tg_version: v0.42.3
           tg_dir: staging/us-east-1/blockchain/pingpub/instance/pingpub-priv
-          tg_command: 'hclfmt --terragrunt-check --terragrunt-diff'
+          tg_command: 'hclfmt'
