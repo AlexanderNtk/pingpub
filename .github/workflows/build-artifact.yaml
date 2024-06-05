@@ -60,14 +60,14 @@ jobs:
       matrix:
         include:
           - env: mainnet
-            role: ${{ secrets.AWS_ROLE_TO_ASSUME_MAINNET }}
-            region:  ${{ secrets.AWS_REGION_MAINNET }}
+            role: AWS_ROLE_TO_ASSUME_MAINNET
+            region:  AWS_REGION_MAINNET
           - env: testnet
-            role: ${{ secrets.AWS_ROLE_TO_ASSUME_TESTNET }}
-            region: ${{ secrets.AWS_REGION_TESTNET }}
+            role: AWS_ROLE_TO_ASSUME_TESTNET
+            region: AWS_REGION_TESTNET
           - env: staging 
-            role: ${{ secrets.AWS_ROLE_TO_ASSUME_STAGING }}
-            region: ${{ secrets.AWS_REGION_STAGING }}
+            role: AWS_ROLE_TO_ASSUME_STAGING
+            region: AWS_REGION_STAGING
     permissions:
       id-token: write 
       contents: read  
@@ -84,8 +84,8 @@ jobs:
       - name: Assume role
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.[matrix.role] }}
+          aws-region: ${{ secrets.[matrix.region] }}
           
       - name: Packer Init
         run: |
