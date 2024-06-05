@@ -231,7 +231,7 @@ jobs:
         with:
           tf_version: v1.3.3
           tg_version: v0.42.3
-          tg_dir: ${GITHUB_WORKSPACE}/tgcode/mainnet/ap-northeast-2/blockchain/pingpub/instance/pingpub-priv
+          tg_dir: tgcode/mainnet/ap-northeast-2/blockchain/pingpub/instance/pingpub-priv
           tg_command: 'hclfmt'
 
       - name: Check terragrunt HCL testnet
@@ -239,7 +239,7 @@ jobs:
         with:
           tf_version: v1.3.3
           tg_version: v0.42.3
-          tg_dir: ${GITHUB_WORKSPACE}/tgcode/testnet/us-east-1/public-testnet-20221028/pingpub/instances/pingpub-priv
+          tg_dir: tgcode/testnet/us-east-1/public-testnet-20221028/pingpub/instances/pingpub-priv
           tg_command: 'hclfmt'
 
       - name: Check terragrunt HCL staging
@@ -247,7 +247,7 @@ jobs:
         with:
           tf_version: v1.3.3
           tg_version: v0.42.3
-          tg_dir: ${GITHUB_WORKSPACE}/tgcode/staging/us-east-1/blockchain/pingpub/instance/pingpub-priv
+          tg_dir: tgcode/staging/us-east-1/blockchain/pingpub/instance/pingpub-priv
           tg_command: 'hclfmt'
 
       - name: Commit changes
