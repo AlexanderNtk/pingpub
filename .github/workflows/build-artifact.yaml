@@ -188,9 +188,9 @@ jobs:
 
       - name: Debug
         env:
-          MAINNET_AMI: ${{ needs.build_image_mainnet.PINGPUB_AMI_MAINNET }}
-          TESTNET_AMI: ${{ needs.build_image_testnet.PINGPUB_AMI_TESTNET }}
-          STAGING_AMI: ${{ needs.build_image_staging.PINGPUB_AMI_STAGING }}
+          MAINNET_AMI: ${{ needs.build_image_mainnet.outputs.PINGPUB_AMI_MAINNET }}
+          TESTNET_AMI: ${{ needs.build_image_testnet.outputs.PINGPUB_AMI_TESTNET }}
+          STAGING_AMI: ${{ needs.build_image_staging.outputs.PINGPUB_AMI_STAGING }}
         run:
           echo $MAINNET_AMI
           echo $TESTNET_AMI
@@ -200,8 +200,13 @@ jobs:
         uses: jacobtomlinson/gha-find-replace@v3
         with:
           find: "aws_instance_ami = .*"
-          replace: ${{ format('{0}{1}', "aws_instance_ami = ", needs.build_image_staging.PINGPUB_AMI_STAGING ) }}
+          replace: "aws_instance_ami = ${{ needs.build_image_staging.outputs.PINGPUB_AMI_STAGING }}"
           include: ${GITHUB_WORKSPACE}."/staging/us-east-1/blockchain/pingpub/instance/pingpub-priv/*.hcl"
+
+      - name: Debug
+        run: cat ${GITHUB_WORKSPACE}."/staging/us-east-1/blockchain/pingpub/instance/pingpub-priv/terragrunt.hcl"
+
+
 
       - name: Check terragrunt HCL mainnet
         uses: gruntwork-io/terragrunt-action@v2
