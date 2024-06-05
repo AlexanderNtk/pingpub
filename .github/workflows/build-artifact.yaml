@@ -138,7 +138,7 @@ jobs:
     needs: build_packages
     runs-on: ubuntu-latest
     outputs: 
-      PINGPUB_AMI_MAINNET: ${{ steps.extract.PINGPUB_AMI }}
+      PINGPUB_AMI_MAINNET: ${{ steps.extract.outputs.PINGPUB_AMI }}
     permissions:
       id-token: write 
       contents: read  
@@ -186,12 +186,24 @@ jobs:
           repository: 'saage-tech/terragrunt-live-sgenetwork'
           token:  ${{ secrets.READ_ST }}
 
-      #- name: Update AMI
-      #  run: |
-      #    sed -i 's/${{ needs.build_mage.PINGPUB_AMI_ID }}/ami-${PING_PUB}/'  pingpub_staging/live-sgenetwork/terragrunt-live.hierarcct/terragrunt-live-sgengen
-
       - name: Debug
         run:
           echo ${{ needs.build_image_mainnet.PINGPUB_AMI_MAINNET }}
           echo ${{ needs.build_image_testnet.PINGPUB_AMI_TESTNET }}
           echo ${{ needs.build_image_staging.PINGPUB_AMI_STAGING }}
+
+      - name: Replace AMI ID
+        run: |
+          ls -la ${{ GITHUB_WORKSPACE }}
+          pwd
+          cd staging/us-east-1/blockchain/pingpub/instance/pingpub-priv
+          awk '/aws_instance_ami =/{gsub(".*","aws_instance_ami=MY LINE",$0)}1' terragrunt.hcl
+
+
+      - name: Check terragrunt HCL mainnet
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tf_version: v1.3.3
+          tg_version: v0.42.3
+          tg_dir: staging/us-east-1/blockchain/pingpub/instance/pingpub-priv
+          tg_command: 'hclfmt --terragrunt-check --terragrunt-diff'
