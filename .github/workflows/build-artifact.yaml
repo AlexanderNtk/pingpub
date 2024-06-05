@@ -75,14 +75,14 @@ jobs:
           
       - name: Packer Init
         run: |
-          cp pingpub_${{ matrix.env }}.tar.gz/pingpub_${{ matrix.env }}.tar.gz ./packer/blockexplorer/files/pingpub.tar.gz
+          cp pingpub_staging.tar.gz/pingpub_staging.tar.gz ./packer/blockexplorer/files/pingpub.tar.gz
           cd packer/blockexplorer
           packer init .
 
       - name: Packer Build 
         working-directory: packer/blockexplorer
         run: |
-          packer build -var-file=${{ matrix.env }}.pkvars.hcl blockexplorer.pkr.hcl
+          packer build -var-file=staging.pkvars.hcl blockexplorer.pkr.hcl
 
       - name: Extract AMI_ID
         id: extract
@@ -117,14 +117,15 @@ jobs:
           
       - name: Packer Init
         run: |
-          cp pingpub_${{ matrix.env }}.tar.gz/pingpub_${{ matrix.env }}.tar.gz ./packer/blockexplorer/files/pingpub.tar.gz
+          ls -la
+          cp pingpub_testnet.tar.gz/pingpub_testnet.tar.gz ./packer/blockexplorer/files/pingpub.tar.gz
           cd packer/blockexplorer
           packer init .
 
       - name: Packer Build 
         working-directory: packer/blockexplorer
         run: |
-          packer build -var-file=${{ matrix.env }}.pkvars.hcl blockexplorer.pkr.hcl
+          packer build -var-file=testnet.pkvars.hcl blockexplorer.pkr.hcl
 
       - name: Extract AMI_ID
         id: extract
@@ -159,14 +160,14 @@ jobs:
           
       - name: Packer Init
         run: |
-          cp pingpub_${{ matrix.env }}.tar.gz/pingpub_${{ matrix.env }}.tar.gz ./packer/blockexplorer/files/pingpub.tar.gz
+          cp pingpub_mainnet.tar.gz/pingpub_${{ matrix.env }}.tar.gz ./packer/blockexplorer/files/pingpub.tar.gz
           cd packer/blockexplorer
           packer init .
 
       - name: Packer Build 
         working-directory: packer/blockexplorer
         run: |
-          packer build -var-file=${{ matrix.env }}.pkvars.hcl blockexplorer.pkr.hcl
+          packer build -var-file=mainnet.pkvars.hcl blockexplorer.pkr.hcl
 
       - name: Extract AMI_ID
         id: extract
