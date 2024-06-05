@@ -81,6 +81,11 @@ jobs:
       - name: Download 
         uses: actions/download-artifact@v4
 
+      - name: Debug 
+        run: |
+          echo "${{ secrets[matrix.role] }}""
+          echo "${{ secrets[matrix.region] }}"
+
       - name: Assume role
         uses: aws-actions/configure-aws-credentials@v4
         with:
