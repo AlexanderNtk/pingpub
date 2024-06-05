@@ -192,12 +192,26 @@ jobs:
           MAINNET_AMI: ${{ needs.build_image_mainnet.outputs.PINGPUB_AMI_MAINNET }}
           TESTNET_AMI: ${{ needs.build_image_testnet.outputs.PINGPUB_AMI_TESTNET }}
           STAGING_AMI: ${{ needs.build_image_staging.outputs.PINGPUB_AMI_STAGING }}
-        run:
+        run: |
           echo $MAINNET_AMI
           echo $TESTNET_AMI
           echo $STAGING_AMI
           ls -la
           ls tgcode
+
+      - name: Replace AMI ID MainNet
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          find: "aws_instance_ami = .*"
+          replace: "aws_instance_ami = ${{ needs.build_image_staging.outputs.PINGPUB_AMI_STAGING }}"
+          include: ${GITHUB_WORKSPACE}"/tgcode/mainnet/ap-northeast-2/blockchain/pingpub/instance/pingpub-priv/*.hcl"
+
+      - name: Replace AMI ID TestNet
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          find: "aws_instance_ami = .*"
+          replace: "aws_instance_ami = ${{ needs.build_image_staging.outputs.PINGPUB_AMI_STAGING }}"
+          include: ${GITHUB_WORKSPACE}"tgcode/staging/us-east-1/public-testnet-20221028/pingpub/instance/pingpub-priv/*.hcl"
 
       - name: Replace AMI ID Staging
         uses: jacobtomlinson/gha-find-replace@v3
@@ -207,16 +221,30 @@ jobs:
           include: ${GITHUB_WORKSPACE}"tgcode/staging/us-east-1/blockchain/pingpub/instance/pingpub-priv/*.hcl"
 
       - name: Debug
-        run: cat ${GITHUB_WORKSPACE}"tgcode/staging/us-east-1/blockchain/pingpub/instance/pingpub-priv/terragrunt.hcl"
-
-
+        run: cat ${GITHUB_WORKSPACE}"/tgcode/testnet/us-east-1/blockchain/pingpub/instance/pingpub-priv/terragrunt.hcl"
 
       - name: Check terragrunt HCL mainnet
         uses: gruntwork-io/terragrunt-action@v2
         with:
           tf_version: v1.3.3
           tg_version: v0.42.3
-          tg_dir: staging/us-east-1/blockchain/pingpub/instance/pingpub-priv
+          tg_dir: ${GITHUB_WORKSPACE}/tgcode/mainnet/ap-northeast-2/blockchain/pingpub/instance/pingpub-priv
+          tg_command: 'hclfmt'
+
+      - name: Check terragrunt HCL testnet
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tf_version: v1.3.3
+          tg_version: v0.42.3
+          tg_dir: ${GITHUB_WORKSPACE}/tgcode/testnet/us-east-1/public-testnet-20221028/pingpub/instances/pingpub-priv
+          tg_command: 'hclfmt'
+
+      - name: Check terragrunt HCL staging
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tf_version: v1.3.3
+          tg_version: v0.42.3
+          tg_dir: ${GITHUB_WORKSPACE}/tgcode/staging/us-east-1/blockchain/pingpub/instance/pingpub-priv
           tg_command: 'hclfmt'
 
       - name: Commit changes
