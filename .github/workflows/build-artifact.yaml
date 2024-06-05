@@ -86,6 +86,7 @@ jobs:
 
       - name: Extract AMI_ID
         id: extract
+        working-directory: packer/blockexplorer
         run : |
           AMI_ID=$(jq -r '.builds[-1].artifact_id' packer-manifest.json | cut -d ":" -f2)
           echo "PINGPUB_AMI=$AMI_ID" >> $GITHUB_OUTPUT
