@@ -182,23 +182,14 @@ jobs:
   update_ami:
     needs: [ build_image_staging, build_image_testnet, build_image_mainnet ]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout terragrunt code
         uses: actions/checkout@v4
         with: 
           repository: 'saage-tech/terragrunt-live-sgenetwork'
-          token:  ${{ secrets.READ_ST }}
-
-      - name: Debug
-        env:
-          MAINNET_AMI: ${{ needs.build_image_mainnet.outputs.PINGPUB_AMI_MAINNET }}
-          TESTNET_AMI: ${{ needs.build_image_testnet.outputs.PINGPUB_AMI_TESTNET }}
-          STAGING_AMI: ${{ needs.build_image_staging.outputs.PINGPUB_AMI_STAGING }}
-        run: |
-          echo $MAINNET_AMI
-          echo $TESTNET_AMI
-          echo $STAGING_AMI
-          ls -la
+          token:  ${{ secrets.UPDATE_ST }}
   
       - name: Replace AMI IDs
         env:
@@ -213,9 +204,6 @@ jobs:
           sed -i "s/aws_instance_ami =.*/aws_instance_ami = ${TESTNET_AMI}/g" terragrunt.hcl
           cd ${GITHUB_WORKSPACE}/mainnet/ap-northeast-2/blockchain/pingpub/instance/pingpub-priv
           sed -i "s/aws_instance_ami =.*/aws_instance_ami = ${MAINNET_AMI}/g" terragrunt.hcl
-
-      - name: Debug
-        run: cat ${GITHUB_WORKSPACE}"/staging/us-east-1/blockchain/pingpub/instance/pingpub-priv/terragrunt.hcl"
 
       - name: Check terragrunt HCL mainnet
         uses: gruntwork-io/terragrunt-action@v2
@@ -245,3 +233,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Automated Change - PingPub update
+          push_options: --force
