@@ -201,6 +201,10 @@ jobs:
           ls -la
   
       - name: Replace AMI IDs
+        env:
+          MAINNET_AMI: ${{ needs.build_image_mainnet.outputs.PINGPUB_AMI_MAINNET }}
+          TESTNET_AMI: ${{ needs.build_image_testnet.outputs.PINGPUB_AMI_TESTNET }}
+          STAGING_AMI: ${{ needs.build_image_staging.outputs.PINGPUB_AMI_STAGING }}
         run: |
           ls -la $GITHUB_WORKSPACE
           cd ${GITHUB_WORKSPACE}/staging/us-east-1/blockchain/pingpub/instance/pingpub-priv
